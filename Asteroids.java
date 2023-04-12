@@ -32,7 +32,7 @@ public class Asteroids extends Application {
 		pane.getChildren().add(ship.getCharacter());
 
 		List<Asteroid> asteroids = new ArrayList<>();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 0; i++) {
 			Random rnd = new Random();
 			Asteroid asteroid = new Asteroid(rnd.nextInt(paneWidth), rnd.nextInt(paneHeight), 22, 10);
 			asteroids.add(asteroid);
@@ -71,7 +71,10 @@ public class Asteroids extends Application {
 					ship.turnRight();
 				}
 
-				if (pressedKeys.getOrDefault(KeyCode.UP, false)) {
+				if (pressedKeys.getOrDefault(KeyCode.UP, false) && ship.getSpeed() < 10) {
+					ship.accelerate();
+				}
+				else if(pressedKeys.getOrDefault(KeyCode.UP, false) && ship.getSpeed() >= 10 && ship.isOppositeDirection()) {
 					ship.accelerate();
 				}
 

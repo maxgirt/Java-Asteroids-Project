@@ -80,6 +80,13 @@ public abstract class Character {
 	public double getSpeed() {
 		return this.movement.magnitude();
 	}
+	
+	public boolean isOppositeDirection() {
+		Point2D direction = this.getMovement();
+		double angle = Math.toDegrees(Math.atan2(direction.getY(), direction.getX())) - this.getCharacter().getRotate();
+		angle = Math.abs(angle);
+	    return angle > 90;
+	}
 
 }
 

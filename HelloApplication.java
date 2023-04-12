@@ -12,6 +12,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Random;
+import javafx.scene.shape.Shape;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HelloApplication extends Application {
     Random random = new Random();
@@ -43,6 +46,9 @@ public class HelloApplication extends Application {
         ArrayList<String> keyPressed = new ArrayList<>();
         //once per key pres
         ArrayList<String> keyJustPressed = new ArrayList<>();
+
+        // Storing the available jumps
+        ArrayList<Integer> jumps = new ArrayList<>();
 
         mainScene.setOnKeyPressed(
                 (KeyEvent event) ->
@@ -90,18 +96,21 @@ public class HelloApplication extends Application {
         }
 
         score = 0;
-        long lastHyperjumpTime = 0;
-        final long HYPERJUMP_CHARGE_TIME = 50000; // milliseconds
-
 
         AnimationTimer gameloop = new AnimationTimer() {
-            long currentTime = System.currentTimeMillis();
             @Override
             public void handle(long nanotime) {
-                if (keyPressed.contains("LEFT"))
+                int jumps = 0;
+                if (spaceship.elapsedTime >= 5){
+                    spaceship.jumps ++;
+                    spaceship.elapsedTime = 0.0;
+                }
+                if (keyPressed.contains("LEFT")) {
                     spaceship.rotation -= 3;
-                if (keyPressed.contains("RIGHT"))
+                }
+                if (keyPressed.contains("RIGHT")) {
                     spaceship.rotation += 3;
+                }
                 if (keyPressed.contains("UP")) {
                     spaceship.velocity.setLenght(200);
                     spaceship.velocity.setAngle(spaceship.rotation);
@@ -117,16 +126,18 @@ public class HelloApplication extends Application {
                     //TODO: DEATH
                     spaceship.velocity.setLenght(0);
                 }
-                if (keyPressed.contains("W")) {
-                    if (currentTime - spaceship.elapsedTime < HYPERJUMP_CHARGE_TIME) {
-                        // Not enough time has passed since last hyperjump
-                        return;
-                    }
+                if (keyJustPressed.contains("W")) {
+                    if (spaceship.jumps >= 1) {
+                        spaceship.jumps --;
+                        spaceship.elapsedTime = 0.0;
+
                     //Vector jumpDistance = (200.00); // Distance to jump
-                    Vector spaceshipPosition = spaceship.position;
-                    double spaceshipRotation = spaceship.rotation;
+                    //Vector spaceshipPosition = spaceship.position;
+                    //double spaceshipRotation = spaceship.rotation;
                     Sprite Dummy = new Sprite();
-                    double jumpDistance = 50.0; // Distance to jump
+
+
+                    // double jumpDistance = 50.0; // Distance to jump
 
                     // Calculate the position of the hyperjump destination
                     //double jumpX = spaceshipPosition.x + jumpDistance * Math.cos(Math.toRadians(spaceshipRotation));
@@ -136,11 +147,10 @@ public class HelloApplication extends Application {
                     Sprite dummy = new Sprite();
                     dummy.position.set(jumpX, jumpY);
                     // System.out.print(dummy.position.x + dummy.position.y);
-
-                    // Check if there is any overlap with other objects
-                    boolean isOverlap = false;
+                    boolean isOverlap = false; // Check if there is any overlap with other objects
                     for (Sprite obj : asteroidList) {
-                        if (dummy.getBoundary().overlaps(obj.getBoundary()) || dummy.isInside(obj.getBoundary())) {
+                        //dummy.getBoundary().overlaps(obj.getBoundary()) || dummy.isInside(obj.getBoundary())
+                        if (dummy.isInside(obj.getBoundary())) {
                             isOverlap = true;
                             break;
                         }
@@ -148,10 +158,9 @@ public class HelloApplication extends Application {
                     if (!isOverlap) {
                         // If there is an overlap, try again with a new jump destination
                         spaceship.position = dummy.position;
-                        currentTime -= spaceship.elapsedTime;
-                        spaceship.elapsedTime = 0.0;
-                        System.out.println(currentTime/1000);
+                        //System.out.println(spaceship.elapsedTime);
                         return;
+                        }
                     }
 
                 }
@@ -227,11 +236,35 @@ public class HelloApplication extends Application {
                 context.setStroke(Color.BLUEVIOLET);
                 context.setFont( new Font("sans serif", 48));
                 context.setLineWidth(3);
-                String text = "SCORE:" + score;
-                int textX = 680;
+                String text = "SCORE:" + score ;
+                String timeText = "HJUMPS:" + spaceship.jumps;
+                String text2 = "Timer" + String.format("%.1f", spaceship.elapsedTime);
+                int textX = 600;
                 int textY = 60;
                 context.fillText(text, textX, textY);
                 context.strokeText(text, textX, textY);
+                //context.fillText(timeText, textX, textY + 60);
+                //context.strokeText(timeText, textX, textY + 60);
+                context.fillText(text2, textX, textY + 120);
+                context.strokeText(text2, textX, textY + 120);
+                if (spaceship.jumps >=1) {
+                    context.setFont( new Font("sans serif", 48));
+                    context.setLineWidth(3);
+                    context.setFill(Color.LAWNGREEN);
+                    context.setStroke(Color.LAWNGREEN);
+                    String jumpOn = "JUMP : ON";
+                    context.fillText(jumpOn, textX, textY + 60);
+                    context.strokeText(jumpOn, textX, textY + 60);
+                }
+                else {
+                    context.setFont( new Font("sans serif", 48));
+                    context.setLineWidth(3);
+                    context.setFill(Color.RED);
+                    context.setStroke(Color.RED);
+                    String jumpOff = "JUMP : OFF";
+                    context.fillText(jumpOff, textX, textY + 60);
+                    context.strokeText(jumpOff, textX, textY + 60);
+                }
 
                     for (Sprite laser : laserList)
                         laser.render(context);

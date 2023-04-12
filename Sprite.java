@@ -9,6 +9,7 @@ public class Sprite {
     public Rectangle boundary;
     public Image image;
     public Double elapsedTime;
+    public Double jumps;
 
     public Sprite() {
         this.position = new Vector();
@@ -16,6 +17,7 @@ public class Sprite {
         this.rotation = 0.0;
         this.boundary = new Rectangle();
         this.elapsedTime = 0.0;
+        this.jumps = 0.0;
 
 
 
@@ -62,7 +64,7 @@ public class Sprite {
         //update the position according to velocity
         this.position.add(this.velocity.x * deltaTime, this.velocity.y * deltaTime);
         // wrap around screen
-        this.wrap(800,600);
+        this.wrap(900,600);
     }
 
     public void render(GraphicsContext context) {
@@ -80,6 +82,15 @@ public class Sprite {
                 this.getBoundary().y > other.y &&
                 this.getBoundary().x + this.getBoundary().width < other.x + other.width &&
                 this.getBoundary().y + this.getBoundary().height < other.y + other.height;
+    }
+
+    public void justJumped(){
+        this.jumps = this.jumps - 1;
+
+    }
+
+    public double getJumps(){
+        return this.jumps;
     }
 }
 

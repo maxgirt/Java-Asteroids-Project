@@ -8,11 +8,13 @@ public abstract class Character {
 	private Point2D movement;
 	public static int height = 400;
 	public static int width = 600;
+	public Point2D position;
 
 	public Character(Polygon polygon, double x, double y) {
 		this.character = polygon;
 		this.character.setTranslateX(x);
 		this.character.setTranslateY(y);
+		this.position = new Point2D(x, y);
 
 		this.movement = new Point2D(0, 0);
 	}
@@ -71,6 +73,13 @@ public abstract class Character {
 	
 	public Point2D getMovement() {
 		return this.movement;
+	}
+	
+	public Point2D getPosition(){
+		return this.position;
+	}
+	public void setPosition(Point2D position){
+		this.position = position;
 	}
 	
 	public void setMovement(Point2D movement) {

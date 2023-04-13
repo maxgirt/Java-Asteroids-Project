@@ -20,6 +20,7 @@ public class Asteroids extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		Random rnd = new Random();
 		Pane pane = new Pane();
 		pane.setPrefSize(paneWidth, paneHeight);
 
@@ -32,8 +33,7 @@ public class Asteroids extends Application {
 		pane.getChildren().add(ship.getCharacter());
 
 		List<Asteroid> asteroids = new ArrayList<>();
-		for (int i = 0; i < 0; i++) {
-			Random rnd = new Random();
+		for (int i = 0; i < 10; i++) {
 			Asteroid asteroid = new Asteroid(rnd.nextInt(paneWidth), rnd.nextInt(paneHeight), 22, 10);
 			asteroids.add(asteroid);
 		}
@@ -51,6 +51,8 @@ public class Asteroids extends Application {
 		scene.setOnKeyReleased(event -> {
 			pressedKeys.put(event.getCode(), Boolean.FALSE);
 		});
+		
+		
 
 		List<Bullet> bullets = new ArrayList<>();
 		List<Bullet> deadBullets = new ArrayList<>();
@@ -60,9 +62,17 @@ public class Asteroids extends Application {
 
 		new AnimationTimer() {
 			double shootTimer = System.nanoTime()-1e8;
+			long lastUpdateTime = System.nanoTime();
 
 			@Override
-			public void handle(long now) {
+			public void handle(long nanotime) {
+				long elapsedTime = nanotime - lastUpdateTime;
+		        lastUpdateTime = nanotime;
+				ship.elapsedTime += elapsedTime;
+                if (ship.elapsedTime >= 2e9){
+                    ship.jumps ++;
+                    ship.elapsedTime = (long) 0;
+                }
 				if (pressedKeys.getOrDefault(KeyCode.LEFT, false)) {
 					ship.turnLeft();
 				}
@@ -74,10 +84,38 @@ public class Asteroids extends Application {
 				if (pressedKeys.getOrDefault(KeyCode.UP, false) && ship.getSpeed() < 10) {
 					ship.accelerate();
 				}
-				else if(pressedKeys.getOrDefault(KeyCode.UP, false) && ship.getSpeed() >= 10 && ship.isOppositeDirection()) {
+				if(pressedKeys.getOrDefault(KeyCode.UP, false) && ship.getSpeed() >= 10 && ship.isOppositeDirection()) {
 					ship.accelerate();
 				}
-
+			
+				if(pressedKeys.getOrDefault(KeyCode.W, false)) {
+                    if(ship.jumps >= 1) {
+                        ship.jumps --;
+                        ship.elapsedTime = (long) 0;
+               
+                        int jumpX = rnd.nextInt(600);
+                        int jumpY = rnd.nextInt(400);
+                        Ship dummyShip = new Ship(jumpX,jumpY);
+                        boolean isOverlap = false;
+                        
+                        for (Asteroid obj : asteroids) {
+                            //dummy.getBoundary().overlaps(obj.getBoundary()) || dummy.isInside(obj.getBoundary())
+                            if (dummyShip.collide(obj)) {
+                                isOverlap = true;
+                                break;
+                            }
+                        
+                        }
+                        if (!isOverlap) {
+                            // If there is an overlap, try again with a new jump destination
+                            ship.hyperspaceJump(dummyShip);
+                            System.out.println("Jumped to new position: X=" + dummyShip.position.getX() + ", Y=" + dummyShip.position.getY());
+                            //System.out.println(spaceship.elapsedTime);
+                            return;
+                            }
+                       }
+				}
+				
 				ship.move();
 				asteroids.forEach(asteroid -> asteroid.move());
 				bullets.forEach(bullet -> bullet.move());
@@ -169,8 +207,9 @@ public class Asteroids extends Application {
 				}
 
 				bullets.removeAll(deadBullets);
-
+				System.out.println(ship.jumps);
 			}
+			
 		}.start();
 	}
 

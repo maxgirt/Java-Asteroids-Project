@@ -7,11 +7,20 @@ public class Ship extends Character{
 	public Long elapsedTime;
     public Double jumps;
     private Point2D movement;
+	public int lives;
+	public long collisionCooldown;
+	public long lastCollisionTime;
+	public boolean isInvincible;
+
 	public Ship(int x, int y) {
         super(new Polygon(-10, -10, 20, 0, -10, 10), x, y);
 		this.elapsedTime = (long) 0;
         this.jumps = 0.0;
         this.movement = new Point2D(0, 0);
+		this.lives = 3;
+		this.collisionCooldown = 1000000000L; // 1 second cooldown
+		this.lastCollisionTime = 0L;
+		this.isInvincible = false;
 	}
 	/*
 	 * public void setMovement(Point2D movement) { this.movement = movement; }

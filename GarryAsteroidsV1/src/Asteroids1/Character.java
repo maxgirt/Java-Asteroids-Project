@@ -3,11 +3,17 @@ import javafx.geometry.Point2D;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
+//why is this an abstract class?
+//most of our instance variables should be declared private, why are height and width set to public?
+//why are setters void  --> not returning anything, just updating variable?
+//we should make our height and width static and final since they will not be changed --> they should remain constant 
+//final variables should be named in all CAPS
+//maybe we should have a constants class for all our final variables that will not be changed
 public abstract class Character {
 	private Polygon character;
 	private Point2D movement;
-	public static int height = 600;
-	public static int width = 800;
+	public static final int HEIGHT = 600;
+	public static final int WIDTH = 800;
 	public Point2D position;
 
 	public Character(Polygon polygon, double x, double y) {

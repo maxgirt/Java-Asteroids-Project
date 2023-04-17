@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import java.util.concurrent.atomic.AtomicLong;
 import javafx.scene.text.Font;
 import javafx.scene.paint.Color;
@@ -89,6 +88,7 @@ public class Asteroids  {
 		AtomicLong alienShootTimer = new AtomicLong(System.nanoTime() - (long)1e9);
 		List<Alien> aliens = new ArrayList<>();
 		AtomicLong alienSpawnTimer = new AtomicLong(System.nanoTime());
+		List<Alien> deadAliens = new ArrayList<>();
 		
 		Text livesText = new Text("Lives: " + ship.lives);
 		livesText.setFont(Font.font("Verdana", 14));
@@ -178,7 +178,7 @@ public class Asteroids  {
 				
 				
 				
-				if (System.nanoTime() - alienSpawnTimer.get() >= 5e9) { //Every 5 seconds, a new Alien is generated
+				if (currentLevel % 1 == 0 && (aliens.size() <1 ) && System.nanoTime() - alienSpawnTimer.get() >= 15e9) {
 					Alien newAlien = new Alien(0, 0);
 					newAlien.setRandomStartPosition(paneWidth, paneHeight);
 					aliens.add(newAlien);
@@ -259,12 +259,14 @@ public class Asteroids  {
 					bullets.forEach(bullet -> {
 						if (bullet.collide(alien)) {
 							deadBullets.add(bullet);
-							pane.getChildren().remove(alien.getCharacter());
+							deadAliens.add(alien);
 							alien.setAlive(false); // Set the alien as not alive
+							pane.getChildren().removeAll(bullet.getCharacter(), alien.getCharacter());
 						}
 					});
 				});
 				bullets.removeAll(deadBullets);
+				aliens.removeAll(deadAliens);
 
 				
 				
@@ -345,6 +347,7 @@ public class Asteroids  {
 					        pane.getChildren().removeAll(bullet.getCharacter(), asteroid.getCharacter());
 
 					    }
+					  
 					});
 				});
 				// remove dead bullets and asteroids from the original lists

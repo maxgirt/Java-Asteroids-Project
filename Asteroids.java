@@ -196,7 +196,7 @@ public class Asteroids  {
 				
 				
 				
-				if (currentLevel % 1 == 0 && !alienFlag) {
+				if (currentLevel % 2 == 0 && !alienFlag) {
 					Alien newAlien = new Alien(0, 0);
 					newAlien.setRandomStartPosition(paneWidth, paneHeight);
 					aliens.add(newAlien);
@@ -253,7 +253,7 @@ public class Asteroids  {
 				alienBullets.forEach(bullet -> bullet.move());
 
 				for (Bullet bullet : alienBullets) {
-					if (bullet.getAge() > 2e9) { // 如果子弹已经存在超过 2 秒
+					if (bullet.getDistance() > 6000) { // 如果子弹已经存在超过 2 秒
 						deadAlienBullets.add(bullet);
 						pane.getChildren().remove(bullet.getCharacter());
 					}
@@ -421,8 +421,9 @@ public class Asteroids  {
 				}
 
 				for (Bullet bullet : bullets) {
+					System.out.println(bullet.getDistance());
 
-					if (bullet.getAge() > 2e9) { // if bullet has been alive for more than 100 frames
+					if (bullet.getDistance() > 35) { // if bullet has been alive for more than 100 frames
 						deadBullets.add(bullet); // add bullet to removal list
 						pane.getChildren().remove(bullet.getCharacter()); // remove bullet's character from pane
 					}
